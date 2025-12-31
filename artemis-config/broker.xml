@@ -259,21 +259,21 @@ under the License.
             </anycast>
          </address>
 
-	<address name="lrm_web_pedidos">
+	<address name="lre_web_pedidos">
             <anycast>
-               <queue name="lrm_web_pedidos" />
+               <queue name="lre_web_pedidos" />
             </anycast>
          </address>
 
-	<address name="lrm_mkp_pedidos">
+	<address name="lre_mkp_pedidos">
             <anycast>
-               <queue name="lrm_mkp_pedidos" />
+               <queue name="lre_mkp_pedidos" />
             </anycast>
          </address>
 
-	<address name="lrm_pedidos">
+	<address name="lre_pedidos">
             <anycast>
-               <queue name="lrm_pedidos" />
+               <queue name="lre_pedidos" />
             </anycast>
          </address>
 
