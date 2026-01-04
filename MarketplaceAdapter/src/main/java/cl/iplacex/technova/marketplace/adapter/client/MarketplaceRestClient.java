@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MarketplaceRestClient {
 
-    private static final String BASE_URL = "http://localhost:8091";
+    private static final String BASE_URL = "http://0.0.0.0:8091";
 
     private final HttpClient httpClient;
 
