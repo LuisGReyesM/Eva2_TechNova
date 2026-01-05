@@ -40,7 +40,7 @@ build/
 
 # ===== Java =====
 *.class
-
+/.idea/
 # ===== Logs =====
 *.log
 
