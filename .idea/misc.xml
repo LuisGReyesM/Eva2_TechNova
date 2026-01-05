@@ -6,6 +6,8 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/translator/web-translator/pom.xml" />
+        <option value="$PROJECT_DIR$/FacturacionAdapter/pom.xml" />
       </list>
     </option>
   </component>
