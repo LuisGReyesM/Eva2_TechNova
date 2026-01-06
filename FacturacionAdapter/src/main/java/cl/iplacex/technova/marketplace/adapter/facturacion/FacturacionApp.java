@@ -4,8 +4,6 @@ import jakarta.jms.*;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import com.google.gson.Gson;
 import cl.iplacex.technova.marketplace.adapter.translator.canonical.CanonicalOrder;
-
-// Asegúrate de que estos imports coincidan con la ubicación de tus clases generadas por CXF
 import cl.iplacex.technova.marketplace.adapter.facturacion.client.ServicioFacturacion;
 import cl.iplacex.technova.marketplace.adapter.facturacion.client.Servicio;
 
@@ -39,7 +37,6 @@ public class FacturacionApp {
                         String rut = orden.getCliente().getIdentificador();
                         String nombre = orden.getCliente().getNombreCompleto();
                         long total = orden.getDetalle().getFinanciero().getTotalFinal();
-
                         System.out.println("\n📦 Pedido recibido ID: " + id);
 
                         // 3. Invocación del servicio legado SOAP

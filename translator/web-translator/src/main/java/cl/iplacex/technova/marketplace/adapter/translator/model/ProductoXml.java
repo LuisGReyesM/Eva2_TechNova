@@ -5,6 +5,11 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 
+
+/**
+ * Representa la información técnica y comercial de un producto en formato XML.
+ * Este modelo permite transferir los datos maestros del producto hacia el ERP.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
 public class ProductoXml {

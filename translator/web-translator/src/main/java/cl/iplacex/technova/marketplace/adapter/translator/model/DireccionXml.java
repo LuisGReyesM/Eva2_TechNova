@@ -5,6 +5,11 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 
+/**
+ * Representa la dirección física de entrega en formato XML.
+ * Este componente es esencial para los sistemas de logística y despacho.
+ */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
 public class DireccionXml {

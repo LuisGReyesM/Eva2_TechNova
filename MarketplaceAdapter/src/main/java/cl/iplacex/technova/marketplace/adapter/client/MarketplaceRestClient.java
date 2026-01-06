@@ -3,7 +3,6 @@ package cl.iplacex.technova.marketplace.adapter.client;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -11,8 +10,13 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarketplaceRestClient {
+/**
+ * Cliente REST encargado de la integración con el sistema Marketplace.
+ * Realiza peticiones HTTP para obtener información de pedidos y costos.
+ */
 
+public class MarketplaceRestClient {
+    // URL base del servicio externo.
     private static final String BASE_URL = "http://0.0.0.0:8091";
 
     private final HttpClient httpClient;

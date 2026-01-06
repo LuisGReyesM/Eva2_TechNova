@@ -4,6 +4,12 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlType;
 
+
+/**
+ * Representa la categoría de un producto en formato XML.
+ * Utiliza anotaciones JAXB para definir cómo se transformará de Objeto a XML y viceversa.
+ */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
 public class CategoriaXml {
