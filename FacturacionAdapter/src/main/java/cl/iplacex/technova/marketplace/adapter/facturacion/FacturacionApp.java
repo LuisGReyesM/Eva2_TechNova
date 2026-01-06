@@ -4,115 +4,82 @@ import jakarta.jms.*;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import com.google.gson.Gson;
 import cl.iplacex.technova.marketplace.adapter.translator.canonical.CanonicalOrder;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
-/**
- * Adapter de Facturación: Consume mensajes en formato Canónico (JSON) [cite: 152]
- * y realiza la integración con el sistema legado mediante SOAP[cite: 150].
- */
+// Asegúrate de que estos imports coincidan con la ubicación de tus clases generadas por CXF
+import cl.iplacex.technova.marketplace.adapter.facturacion.client.ServicioFacturacion;
+import cl.iplacex.technova.marketplace.adapter.facturacion.client.Servicio;
+
 public class FacturacionApp {
 
     public static void main(String[] args) {
-
-        // Configuración de conexión al Broker Artemis [cite: 43]
+        // 1. Configuración de conexión al Broker Artemis
         String brokerUrl = "tcp://192.168.1.167:61616";
-        String queueName = "lre_pedidos"; // Canal central unificado [cite: 58, 69]
+        String queueName = "lre_pedidos";
 
         try (ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerUrl);
              Connection connection = factory.createConnection()) {
 
             connection.start();
-
-            // Configuración de la sesión y consumidor Jakarta Messaging
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Queue queue = session.createQueue(queueName);
             MessageConsumer consumer = session.createConsumer(queue);
 
-            // Implementación del Messaging Endpoint
+            System.out.println("🚀 [ADAPTER] Escuchando pedidos canónicos en la cola: " + queueName);
+
+            // 2. Definición del MessageListener para procesamiento asíncrono
             consumer.setMessageListener(message -> {
                 try {
                     if (message instanceof TextMessage textMessage) {
+                        // Recepción del mensaje en formato Canónico (JSON)
+                        String json = textMessage.getText();
+                        CanonicalOrder orden = new Gson().fromJson(json, CanonicalOrder.class);
 
-                        String jsonBody = textMessage.getText();
-                        Gson gson = new Gson();
+                        // Extracción de datos para el sistema legado
+                        String id = orden.getCabecera().getIdPedidoExterno();
+                        String rut = orden.getCliente().getIdentificador();
+                        String nombre = orden.getCliente().getNombreCompleto();
+                        long total = orden.getDetalle().getFinanciero().getTotalFinal();
 
-                        // 1. Extraer información desde el Modelo Canónico diseñado [cite: 152]
-                        CanonicalOrder orden = gson.fromJson(jsonBody, CanonicalOrder.class);
+                        System.out.println("\n📦 Pedido recibido ID: " + id);
 
-                        String idPedido = orden.getCabecera().getIdPedidoExterno();
-                        String rutCliente = orden.getCliente().getIdentificador();
-                        long totalFinal = orden.getDetalle().getFinanciero().getTotalFinal();
-
-                        System.out.println("\n📥 [MENSAJE RECIBIDO EN CANAL CENTRAL]");
-                        System.out.println("ID Pedido: " + idPedido);
-                        System.out.println("Monto a Facturar: $" + totalFinal);
-
-                        // 2. Realizar la integración real con el servicio SOAP [cite: 152]
-                        consumirServicioSoapFacturacion(rutCliente, totalFinal, idPedido);
+                        // 3. Invocación del servicio legado SOAP
+                        invocarSoap(nombre, rut, total);
                     }
-
                 } catch (Exception e) {
-                    System.err.println("❌ Error procesando mensaje de facturación");
-                    e.printStackTrace();
+                    System.err.println("❌ Error procesando el mensaje: " + e.getMessage());
                 }
             });
 
-            System.out.println("📑 Adapter de Facturación activo. Escuchando: " + queueName);
-
-            // Mantener la ejecución para el MessageListener
+            // Mantiene la aplicación corriendo para seguir escuchando la cola
             Thread.currentThread().join();
 
         } catch (Exception e) {
-            System.err.println("❌ Error de conexión con el Broker");
+            System.err.println("❌ Error crítico en el Adapter: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     /**
-     * Realiza la llamada al servicio web SOAP de Facturación[cite: 152].
+     * Método que actúa como el Adapter hacia el sistema legado SOAP.
+     * Utiliza las clases generadas (Stub) para realizar la comunicación RPC.
      */
-    private static void consumirServicioSoapFacturacion(String rut, long monto, String id) {
-        // Endpoint del sistema legado proporcionado [cite: 38, 150]
-        String soapEndpoint = "http://localhost:8090/soap/facturacion";
-
-        // Construcción del XML SOAP Envelope para el sistema legado [cite: 8, 152]
-        String soapEnvelope =
-                "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-                        "xmlns:ser=\"http://example.org/\">" + // Namespace extraído de tu consola
-                        "   <soapenv:Header/>" +
-                        "   <soapenv:Body>" +
-                        "      <ser:ServicioFacturacion>" + // Nombre del método según el log
-                        "         <arg0>" + id + "</arg0>" +    // Los sistemas legados suelen usar arg0 para ID
-                        "         <arg1>" + rut + "</arg1>" +   // arg1 para RUT
-                        "         <arg2>" + monto + "</arg2>" + // arg2 para Monto
-                        "      </ser:ServicioFacturacion>" +
-                        "   </soapenv:Body>" +
-                        "</soapenv:Envelope>";
-
+    private static void invocarSoap(String cliente, String rut, long monto) {
         try {
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(soapEndpoint))
-                    .header("Content-Type", "text/xml; charset=utf-8")
-                    .POST(HttpRequest.BodyPublishers.ofString(soapEnvelope))
-                    .build();
+            // Instanciación del cliente SOAP generado
+            ServicioFacturacion service = new ServicioFacturacion();
+            Servicio port = service.getServicioImplPort();
 
-            System.out.println("📡 Enviando solicitud SOAP al sistema de Facturación...");
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("📡 Enviando datos al Sistema Legado de Facturación...");
 
-            if (response.statusCode() == 200) {
-                System.out.println("✅ [SOAP SUCCESS] Documento emitido para: " + rut);
-                System.out.println("📄 Respuesta: " + response.body());
-            } else {
-                System.err.println("⚠️ [SOAP WARNING] El servicio respondió con código: " + response.statusCode());
-            }
+            // Consumo del servicio web SOAP
+            String xmlBoleta = port.generarBoleta(cliente, rut, monto);
+
+            System.out.println("✅ Documento Tributario generado con éxito.");
+            System.out.println("📄 Respuesta Legada (DTE):\n" + xmlBoleta);
             System.out.println("--------------------------------------------------");
 
         } catch (Exception e) {
-            System.err.println("❌ Error de comunicación con el servicio SOAP legado: " + e.getMessage());
+            System.err.println("❌ Error de comunicación SOAP con el sistema legado: " + e.getMessage());
         }
     }
 }
