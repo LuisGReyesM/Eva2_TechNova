@@ -3,6 +3,12 @@ package cl.iplacex.technova.marketplace.adapter.translator.model;
 import jakarta.xml.bind.annotation.*;
 import java.util.List;
 
+/**
+ * Clase Raíz (Root Element) para la generación del XML del pedido.
+ * Esta clase orquesta todos los componentes del modelo (Comprador, Dirección, Items)
+ * en una única estructura jerárquica.
+ */
+
 @XmlRootElement(name = "pedido")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType

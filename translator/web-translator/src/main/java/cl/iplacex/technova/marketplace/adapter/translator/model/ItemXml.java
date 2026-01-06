@@ -5,6 +5,11 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 
+/**
+ * Representa una línea de detalle dentro del pedido.
+ * Mapea la relación entre un producto y cuántas unidades se solicitaron.
+ */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 public class ItemXml {

@@ -1,5 +1,10 @@
 package cl.iplacex.technova.marketplace.adapter.translator.canonical;
 
+/**
+ * Representa los metadatos estandarizados de un pedido.
+ * Esta clase es parte del Modelo Canónico, asegurando que todos los pedidos
+ * tengan la misma estructura básica independientemente de su origen.
+ */
 public class Categoria {
 
     private int id;

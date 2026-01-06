@@ -3,6 +3,11 @@ package cl.iplacex.technova.marketplace.adapter.enricher;
 import cl.iplacex.technova.marketplace.adapter.client.MarketplaceRestClient;
 import com.google.gson.JsonObject;
 
+/**
+ * Servicio que implementa el patrón Content Enricher.
+ * Su objetivo es completar la información de un mensaje antes de que
+ * continúe su camino hacia otros sistemas.
+ */
 public class EnrichmentService {
 
     private final MarketplaceRestClient restClient;

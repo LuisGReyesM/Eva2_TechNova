@@ -5,6 +5,12 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 
+/**
+ * Representa los datos del cliente en el formato estandarizado XML.
+ * Esta clase se utiliza para mapear la información del comprador hacia sistemas
+ * que requieren XML (como un ERP antiguo o un servicio SOAP).
+ */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
 public class ClienteXml {

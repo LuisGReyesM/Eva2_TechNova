@@ -4,19 +4,29 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import cl.iplacex.technova.marketplace.adapter.translator.canonical.*;
 
+/**
+ * Traductor encargado de transformar el JSON crudo del Marketplace
+ * al Modelo de Datos Canónico de la empresa.
+ */
 public class MarketplaceOrderTranslator {
-
+    /**
+     * Mapea los campos del JSON a objetos Java estandarizados.
+     * @param json Cadena de texto en formato JSON recibida de la cola.
+     * @return Objeto CanonicalOrder listo para ser procesado internamente.
+     */
     public CanonicalOrder translate(String json) {
 
         JsonObject original = JsonParser.parseString(json).getAsJsonObject();
 
         // === CABECERA ===
+        // Normalizamos los metadatos del pedido
         Cabecera cabecera = new Cabecera();
         cabecera.setSistemaOrigen("MARKETPLACE");
         cabecera.setIdPedidoExterno(original.get("id").getAsString());
         cabecera.setFechaPedido(original.get("fecha").getAsString());
 
         // === CLIENTE ===
+        // Combinamos datos de diferentes nodos JSON en un único objeto Cliente
         JsonObject clienteJson = original.getAsJsonObject("cliente");
         JsonObject direccionJson = original.getAsJsonObject("direccion");
 
@@ -36,7 +46,7 @@ public class MarketplaceOrderTranslator {
         Detalle detalle = new Detalle();
 
         long subtotal = 0;
-
+        // Iteramos por la lista de productos para calcular totales y mapear items
         for (var itemElem : original.getAsJsonArray("items")) {
             JsonObject itemJson = itemElem.getAsJsonObject();
 
@@ -48,7 +58,8 @@ public class MarketplaceOrderTranslator {
             subtotal += item.getCantidad() * item.getPrecioUnitario();
             detalle.getItems().add(item);
         }
-
+        // === SECCIÓN 4: INFORMACIÓN FINANCIERA ===
+        // Aquí se integra el dato que inyectamos antes con el Content Enricher
         JsonObject shippingJson = original.getAsJsonObject("shipping");
         long costoEnvio = shippingJson.get("costoEnvio").getAsLong();
 
@@ -59,7 +70,7 @@ public class MarketplaceOrderTranslator {
 
         detalle.setFinanciero(financiero);
 
-        // === CANONICAL ===
+        // === RESULTADO FINAL: ENSAMBLE DEL OBJETO CANÓNICO ===
         CanonicalOrder order = new CanonicalOrder();
         order.setCabecera(cabecera);
         order.setCliente(cliente);

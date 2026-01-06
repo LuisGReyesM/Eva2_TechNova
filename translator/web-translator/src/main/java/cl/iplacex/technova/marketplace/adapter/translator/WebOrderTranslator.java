@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Traductor especializado en convertir mensajes XML al formato Canónico.
+ * Implementa el proceso de Deserialización (Unmarshalling) y Mapeo de datos.
+ */
 public class WebOrderTranslator {
 
     /**
@@ -22,7 +26,7 @@ public class WebOrderTranslator {
     }
 
     /**
-     * Traducción XML -> Canonical
+     * Realiza el mapeo lógico de campos entre el modelo XML y el Canónico.
      */
     private CanonicalOrder translate(WebPedidoXml webPedidoXml) {
 
